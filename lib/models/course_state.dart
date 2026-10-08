@@ -18,6 +18,22 @@ class CourseState extends ChangeNotifier {
 
   final Set<String> favorites = {};
 
+  // Method & Getter Favorites
+  bool isFavorite(String code) => favorites.contains(code);
+
+  void toggleFavorite(String code) {
+    if (favorites.contains(code)) {
+      favorites.remove(code);
+    } else {
+      favorites.add(code);
+    }
+    notifyListeners();
+  }
+
+  List<Course> get favoriteCourses {
+    return courses.where((course) => favorites.contains(course.code)).toList();
+  }
+
   Future<void> loadCourses() async {
     isLoading = true;
     error = null;
@@ -31,14 +47,5 @@ class CourseState extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
-  }
-
-  void toggleFavorite(String id) {
-    if (favorites.contains(id)) {
-      favorites.remove(id);
-    } else {
-      favorites.add(id);
-    }
-    notifyListeners();
   }
 }
