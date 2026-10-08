@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 
-// Identitas Mahasiswa (Sesuaikan dengan data asli kamu)
+// Identitas Mahasiswa sesuai instruksi Worksheet
 const String studentName = 'Jamilatul Amalia';
 const String studentId = '2415051107';
 
@@ -16,191 +14,475 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Learning Dashboard',
+      title: 'Course Explorer',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const DashboardPage(),
+      home: const ResponsiveShell(),
     );
   }
 }
 
-// Function Pembaca JSON Statik
-Future<Map<String, dynamic>> loadStudentData() async {
-  final jsonString = await rootBundle.loadString('assets/data/student_data.json');
-  return jsonDecode(jsonString) as Map<String, dynamic>;
-}
+// Data Dummy Course
+final List<Map<String, dynamic>> coursesData = [
+  {
+    'title': 'Responsive Layout',
+    'code': 'MOB04',
+    'status': 'Active',
+    'sks': '3 SKS',
+    'desc': 'Mempelajari pembuatan UI adaptif menggunakan MediaQuery, LayoutBuilder, dan Flex widgets.'
+  },
+  {
+    'title': 'Navigation',
+    'code': 'MOB05',
+    'status': 'Planned',
+    'sks': '2 SKS',
+    'desc': 'Navigasi multi-screen, passing data, returning data, NavigationBar, dan NavigationRail.'
+  },
+  {
+    'title': 'Interaction',
+    'code': 'MOB06',
+    'status': 'Planned',
+    'sks': '3 SKS',
+    'desc': 'Menangani input pengguna, Form validation, InkWell, SnackBar, dan Alert Dialog.'
+  },
+  {
+    'title': 'State Management',
+    'code': 'MOB07',
+    'status': 'Planned',
+    'sks': '3 SKS',
+    'desc': 'Pengelolaan state aplikasi yang kompleks menggunakan Provider / Riverpod.'
+  },
+  {
+    'title': 'API & Database',
+    'code': 'MOB08',
+    'status': 'Planned',
+    'sks': '4 SKS',
+    'desc': 'Integrasi REST API, pemrosesan JSON, dan penyimpanan data lokal SQLite/Hive.'
+  },
+];
 
-class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+// Shell Utama Adaptif (Tahap 10 & 11)
+class ResponsiveShell extends StatefulWidget {
+  const ResponsiveShell({super.key});
 
   @override
-  State<DashboardPage> createState() => _DashboardPageState();
+  State<ResponsiveShell> createState() => _ResponsiveShellState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
-  late Future<Map<String, dynamic>> studentFuture;
+class _ResponsiveShellState extends State<ResponsiveShell> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = const [
+    HomePage(),
+    CoursesPage(),
+    ProfilePage(),
+  ];
 
   @override
-  void initState() {
-    super.initState();
-    studentFuture = loadStudentData(); // Inisialisasi Future di initState
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Breakpoint: Compact/Medium (< 840) vs Expanded (>= 840)
+        if (constraints.maxWidth < 840) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Course Explorer'),
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+            body: _pages[_selectedIndex],
+            bottomNavigationBar: NavigationBar(
+              selectedIndex: _selectedIndex,
+              onDestinationSelected: (index) {
+                setState(() => _selectedIndex = index);
+              },
+              destinations: const [
+                NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+                NavigationDestination(icon: Icon(Icons.school), label: 'Courses'),
+                NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+              ],
+            ),
+          );
+        } else {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Course Explorer (Expanded Layout)'),
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+            body: Row(
+              children: [
+                NavigationRail(
+                  selectedIndex: _selectedIndex,
+                  onDestinationSelected: (index) {
+                    setState(() => _selectedIndex = index);
+                  },
+                  labelType: NavigationRailLabelType.all,
+                  destinations: const [
+                    NavigationRailDestination(
+                      icon: Icon(Icons.home),
+                      label: Text('Home'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.school),
+                      label: Text('Courses'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.person),
+                      label: Text('Profile'),
+                    ),
+                  ],
+                ),
+                const VerticalDivider(thickness: 1, width: 1),
+                Expanded(child: _pages[_selectedIndex]),
+              ],
+            ),
+          );
+        }
+      },
+    );
   }
+}
 
-  // Reusable Widget untuk Kartu Statistik
-  Widget _buildStatCard(String value, String label, IconData icon) {
-    return Expanded(
-      child: Card(
-        elevation: 2,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Icon(icon, color: Colors.blue),
-              const SizedBox(height: 6),
-              Text(
-                value,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+// --- HOME PAGE ---
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Card Identitas
+          Card(
+            color: Colors.blue.shade50,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  const CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.blue,
+                    child: Icon(Icons.person, color: Colors.white, size: 36),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          studentName,
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Text('NIM: $studentId'),
+                        Text('Mobile Programming Student'),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-            ],
+            ),
           ),
-        ),
+          const SizedBox(height: 16),
+          Text(
+            'Ukuran Layar Saat Ini: ${size.width.toStringAsFixed(0)} x ${size.height.toStringAsFixed(0)} px',
+            style: const TextStyle(fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 16),
+          const TextField(
+            decoration: InputDecoration(
+              hintText: 'Search courses...',
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text('Keahlian (Wrap Widget):', style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          const Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              Chip(label: Text('Flutter')),
+              Chip(label: Text('Dart')),
+              Chip(label: Text('Responsive UI')),
+              Chip(label: Text('Git & GitHub')),
+              Chip(label: Text('REST API')),
+            ],
+          )
+        ],
       ),
     );
   }
+}
+
+// --- COURSES PAGE (Tahap 5, 8, 9, 12) ---
+class CoursesPage extends StatefulWidget {
+  const CoursesPage({super.key});
+
+  @override
+  State<CoursesPage> createState() => _CoursesPageState();
+}
+
+class _CoursesPageState extends State<CoursesPage> {
+  final Set<String> _favoriteCodes = {};
+
+  int _getColumns(double width) {
+    if (width < 600) return 1;
+    if (width < 840) return 2;
+    return 3;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return GridView.builder(
+          padding: const EdgeInsets.all(16),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: _getColumns(constraints.maxWidth),
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 2.2,
+          ),
+          itemCount: coursesData.length,
+          itemBuilder: (context, index) {
+            final course = coursesData[index];
+            final isFav = _favoriteCodes.contains(course['code']);
+
+            return InkWell(
+              onTap: () async {
+                // Passing Data ke Detail Page
+                final result = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CourseDetailPage(
+                      course: course,
+                      isFavorite: isFav,
+                    ),
+                  ),
+                );
+
+                if (result != null) {
+                  setState(() {
+                    if (result) {
+                      _favoriteCodes.add(course['code']);
+                    } else {
+                      _favoriteCodes.remove(course['code']);
+                    }
+                  });
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        result
+                            ? '${course['title']} ditambahkan ke favorit!'
+                            : '${course['title']} dihapus dari favorit!',
+                      ),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
+              },
+              child: Card(
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              course['title'],
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text('${course['code']} | ${course['sks']}'),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        isFav ? Icons.favorite : Icons.favorite_border,
+                        color: isFav ? Colors.red : Colors.grey,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+// --- DETAIL PAGE ---
+class CourseDetailPage extends StatelessWidget {
+  final Map<String, dynamic> course;
+  final bool isFavorite;
+
+  const CourseDetailPage({
+    super.key,
+    required this.course,
+    required this.isFavorite,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Learning Dashboard'),
+        title: Text(course['title']),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: studentFuture,
-        builder: (context, snapshot) {
-          // 1. Loading State
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          // 2. Error State
-          if (snapshot.hasError) {
-            return Center(child: Text('Gagal memuat data: ${snapshot.error}'));
-          }
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Kode: ${course['code']}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text('Bobot: ${course['sks']}'),
+            const SizedBox(height: 8),
+            Text('Status: ${course['status']}'),
+            const Divider(height: 32),
+            Text(course['desc'], style: const TextStyle(fontSize: 16)),
+            const Spacer(),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context, !isFavorite);
+                },
+                icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+                label: Text(isFavorite ? 'Hapus dari Favorit' : 'Jadikan Favorit'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isFavorite ? Colors.red.shade100 : Colors.blue.shade100,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-          // 3. Success State (Render UI dari Data JSON)
-          final data = snapshot.data!;
-          final student = data['student'] as Map<String, dynamic>;
-          final courses = data['courses'] as List<dynamic>;
+// --- PROFILE PAGE & FORM FEEDBACK (Tahap 13, 14) ---
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
 
-          int completedCount = courses.where((c) => c['status'] == 'done').length;
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
 
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
+class _ProfilePageState extends State<ProfilePage> {
+  final _formKey = GlobalKey<FormState>();
+  final _commentController = TextEditingController();
+  bool _isLoading = false;
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Konfirmasi'),
+          content: const Text('Apakah Anda yakin ingin mengirimkan feedback ini?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                setState(() => _isLoading = true);
+
+                // Simulasi Loading
+                Future.delayed(const Duration(seconds: 2), () {
+                  setState(() {
+                    _isLoading = false;
+                    _commentController.clear();
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Feedback berhasil dikirim!')),
+                  );
+                });
+              },
+              child: const Text('Kirim'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Profil Mahasiswa', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Text('Nama: $studentName'),
+          Text('NIM: $studentId'),
+          const Divider(height: 32),
+          const Text('Form Feedback', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          Form(
+            key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Identitas Mahasiswa Card
-                Card(
-                  elevation: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        const CircleAvatar(
-                          radius: 30,
-                          backgroundImage: AssetImage('assets/images/profile.jpg'),
-                          child: Icon(Icons.person, size: 30),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                student['name'] ?? studentName,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text('NIM: ${student['nim'] ?? studentId}'),
-                              const Text(
-                                'Mobile Programming Student',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                TextFormField(
+                  initialValue: '$studentName ($studentId)',
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Identitas',
+                    border: OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(height: 16),
-
-                // Ringkasan Statistik
-                Row(
-                  children: [
-                    _buildStatCard('${courses.length}', 'Topik', Icons.book),
-                    _buildStatCard('$completedCount', 'Selesai', Icons.check_circle),
-                    _buildStatCard('60%', 'Progress', Icons.bar_chart),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                const Text(
-                  'Daftar Materi',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-
-                // List Materi
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: courses.length,
-                    itemBuilder: (context, index) {
-                      final course = courses[index] as Map<String, dynamic>;
-                      bool isDone = course['status'] == 'done';
-                      bool isActive = course['status'] == 'active';
-
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        child: ListTile(
-                          leading: Icon(
-                            isDone
-                                ? Icons.check_circle
-                                : (isActive ? Icons.play_circle_fill : Icons.schedule),
-                            color: isDone
-                                ? Colors.green
-                                : (isActive ? Colors.orange : Colors.grey),
-                          ),
-                          title: Text(
-                            course['title'] as String,
-                            style: const TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                          subtitle: Text('Kode: ${course['code']} | Credit: ${course['credits']} SKS'),
-                          trailing: Text(
-                            isDone ? 'Selesai' : (isActive ? 'Berjalan' : 'Rencana'),
-                            style: TextStyle(
-                              color: isDone
-                                  ? Colors.green
-                                  : (isActive ? Colors.orange : Colors.grey),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _commentController,
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    labelText: 'Komentar / Masukan',
+                    border: OutlineInputBorder(),
                   ),
+                  validator: (value) {
+                    if (value == null || value.trim().length < 5) {
+                      return 'Komentar wajib diisi minimal 5 karakter';
+                    }
+                    return null;
+                  },
                 ),
+                const SizedBox(height: 16),
+                _isLoading
+                    ? const CircularProgressIndicator()
+                    : SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _submitForm,
+                          child: const Text('Kirim Feedback'),
+                        ),
+                      ),
               ],
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
