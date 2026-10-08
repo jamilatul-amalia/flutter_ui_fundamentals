@@ -1,11 +1,20 @@
-import 'package:flutter/material.dart';
+// Nama: Jamilatul Amalia
+// NIM: 2415051107
 
-// Identitas Mahasiswa sesuai instruksi Worksheet
-const String studentName = 'Jamilatul Amalia';
-const String studentId = '2415051107';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'models/course_state.dart';
+
+String studentName = 'Jamilatul Amalia';
+String studentId = '2415051107';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => CourseState(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -75,7 +84,7 @@ class ResponsiveShell extends StatefulWidget {
 class _ResponsiveShellState extends State<ResponsiveShell> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [
+  final List<Widget> _pages =[
     HomePage(),
     CoursesPage(),
     ProfilePage(),
@@ -175,7 +184,7 @@ class HomePage extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           studentName,
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
