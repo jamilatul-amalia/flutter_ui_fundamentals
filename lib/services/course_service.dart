@@ -17,4 +17,8 @@ class CourseService {
         .map((e) => Course.fromJson(e as Map<String, dynamic>))
         .toList();
   }
+  // Simulasi Error sementara untuk Kasus C Debugging
+  Future<List<Course>> getCourses() async {
+    throw Exception('Gagal terhubung ke server (Simulasi Error Debugging)');
+  }
 }
