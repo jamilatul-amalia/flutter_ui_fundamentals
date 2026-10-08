@@ -263,7 +263,8 @@ class _CoursesPageState extends State<CoursesPage> {
           itemCount: coursesData.length,
           itemBuilder: (context, index) {
             final course = coursesData[index];
-            final isFav = _favoriteCodes.contains(course['code']);
+            final courseState = context.watch<CourseState>();
+            final isFav = courseState.favorites.contains(course['code']);
 
             return InkWell(
               onTap: () async {
@@ -370,13 +371,22 @@ class CourseDetailPage extends StatelessWidget {
             const SizedBox(height: 8),
             Text('Status: ${course['status']}'),
             const Divider(height: 32),
+              Consumer<CourseState>(
+                builder: (context, state, child) {
+                  return Text(
+                    'Total Favorit Ditambahkan: ${state.favorites.length}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
             Text(course['desc'], style: const TextStyle(fontSize: 16)),
             const Spacer(),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.pop(context, !isFavorite);
+                  context.read<CourseState>().toggleFavorite(course['code']);
                 },
                 icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
                 label: Text(isFavorite ? 'Hapus dari Favorit' : 'Jadikan Favorit'),
