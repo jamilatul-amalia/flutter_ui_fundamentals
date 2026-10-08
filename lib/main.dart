@@ -64,7 +64,7 @@ final List<Map<String, dynamic>> coursesData = [
   },
 ];
 
-// Shell Utama Adaptif (Tahap 10 & 11)
+// Shell Utama Adaptif
 class ResponsiveShell extends StatefulWidget {
   const ResponsiveShell({super.key});
 
@@ -222,7 +222,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// --- COURSES PAGE (Tahap 5, 8, 9, 12) ---
+// --- COURSES PAGE ---
 class CoursesPage extends StatefulWidget {
   const CoursesPage({super.key});
 
@@ -269,6 +269,9 @@ class _CoursesPageState extends State<CoursesPage> {
                   ),
                 );
 
+                // CEK MOUNTED UNTUK MENGHINDARI WARNING ASYNC GAP
+                if (!mounted) return;
+
                 if (result != null) {
                   setState(() {
                     if (result) {
@@ -278,6 +281,7 @@ class _CoursesPageState extends State<CoursesPage> {
                     }
                   });
 
+                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -379,7 +383,7 @@ class CourseDetailPage extends StatelessWidget {
   }
 }
 
-// --- PROFILE PAGE & FORM FEEDBACK (Tahap 13, 14) ---
+// --- PROFILE PAGE & FORM FEEDBACK ---
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -391,6 +395,12 @@ class _ProfilePageState extends State<ProfilePage> {
   final _formKey = GlobalKey<FormState>();
   final _commentController = TextEditingController();
   bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
@@ -411,6 +421,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 // Simulasi Loading
                 Future.delayed(const Duration(seconds: 2), () {
+                  if (!mounted) return;
                   setState(() {
                     _isLoading = false;
                     _commentController.clear();
