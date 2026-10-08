@@ -17,10 +17,21 @@ class Course {
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
+    // Mengambil nilai sks atau credits
+    final rawCredits = json['sks'] ?? json['credits'];
+    int parsedCredits = 0;
+
+    if (rawCredits is int) {
+      parsedCredits = rawCredits;
+    } else if (rawCredits is String) {
+      // Mengambil angka dari teks "3 SKS" -> 3
+      parsedCredits = int.tryParse(rawCredits.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+    }
+
     return Course(
       code: json['code'] as String? ?? '',
       title: json['title'] as String? ?? '',
-      credits: (json['sks'] ?? json['credits'] ?? 0) as int,
+      credits: parsedCredits,
       status: json['status'] as String? ?? 'Wajib',
       desc: json['desc'] as String? ?? '',
     );
