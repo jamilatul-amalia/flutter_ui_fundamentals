@@ -15,3 +15,21 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+# Course Explorer v2 - Flutter UI Fundamentals
+
+**Nama:** Jamilatul Amalia  
+**NIM:** 2415051107  
+
+## Arsitektur Aplikasi & Dependency Direction
+
+Aplikasi ini menerapkan *Separation of Concerns* dengan alur ketergantungan (*dependency direction*) searah:
+`Screen/Widget` -> `Provider (CourseState)` -> `CourseRepository` -> `CourseService` -> `Data Source (JSON)`
+
+### Tanggung Jawab Folder:
+* **`models/`**: Menyimpan struktur data murni (misal: `Course`) dan *application state holder* (`CourseState`).
+* **`services/`**: Menangani pembacaan data mentah dari sumber luar (`rootBundle` / `student_data.json`) dan proses `jsonDecode`.
+* **`repositories/`**: Menjadi perantara antara service dan provider untuk mengolah atau memetakan data mentah menjadi objek model.
+* **`providers/`**: Mengelola *reactive state* (`isLoading`, `error`, `courses`, `favorites`) dan memanggil `notifyListeners()`.
+* **`screens/`**: Menampilkan antarmuka pengguna (*UI Pages*) tanpa menyimpan *business logic* atau pemanggilan data mentah.
+* **`widgets/`**: Menyimpan komponen UI yang reusable (seperti `ResponsiveShell`).
