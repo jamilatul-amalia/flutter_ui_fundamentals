@@ -4,6 +4,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'models/course_state.dart';
+import 'models/course.dart';
+
+// Jika coursesData berbentuk List<Map<String, dynamic>>
+final List<Course> coursesList = coursesData
+    .map((json) => Course.fromJson(json))
+    .toList();
 
 String studentName = 'Jamilatul Amalia';
 String studentId = '2415051107';
@@ -260,11 +266,11 @@ class _CoursesPageState extends State<CoursesPage> {
             mainAxisSpacing: 12,
             childAspectRatio: 2.2,
           ),
-          itemCount: coursesData.length,
+          itemCount: coursesList.length,
           itemBuilder: (context, index) {
-            final course = coursesData[index];
+            final course = coursesList[index];
             final courseState = context.watch<CourseState>();
-            final isFav = courseState.favorites.contains(course['code']);
+            final isFav = courseState.favorites.contains(course.code);
 
             return InkWell(
               onTap: () async {
@@ -285,9 +291,9 @@ class _CoursesPageState extends State<CoursesPage> {
                 if (result != null) {
                   setState(() {
                     if (result) {
-                      _favoriteCodes.add(course['code']);
+                      _favoriteCodes.add(course.code);
                     } else {
-                      _favoriteCodes.remove(course['code']);
+                      _favoriteCodes.remove(course.code);
                     }
                   });
 
@@ -296,8 +302,8 @@ class _CoursesPageState extends State<CoursesPage> {
                     SnackBar(
                       content: Text(
                         result
-                            ? '${course['title']} ditambahkan ke favorit!'
-                            : '${course['title']} dihapus dari favorit!',
+                            ? '${course.title} ditambahkan ke favorit!'
+                            : '${course.title} dihapus dari favorit!',
                       ),
                       duration: const Duration(seconds: 2),
                     ),
@@ -316,12 +322,12 @@ class _CoursesPageState extends State<CoursesPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              course['title'],
+                              course.title,
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            Text('${course['code']} | ${course['sks']}'),
+                            Text('${course.code} | ${course.credits}'),
                           ],
                         ),
                       ),
@@ -343,7 +349,7 @@ class _CoursesPageState extends State<CoursesPage> {
 
 // --- DETAIL PAGE ---
 class CourseDetailPage extends StatelessWidget {
-  final Map<String, dynamic> course;
+  final Course course;
   final bool isFavorite;
 
   const CourseDetailPage({
@@ -356,7 +362,7 @@ class CourseDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(course['title']),
+        title: Text(course.title),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
@@ -365,11 +371,11 @@ class CourseDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Kode: ${course['code']}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Kode: ${course.code}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text('Bobot: ${course['sks']}'),
+            Text('Bobot: ${course.credits}'),
             const SizedBox(height: 8),
-            Text('Status: ${course['status']}'),
+            Text('Status: ${course.status}'),
             const Divider(height: 32),
               Consumer<CourseState>(
                 builder: (context, state, child) {
@@ -380,13 +386,13 @@ class CourseDetailPage extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 12),
-            Text(course['desc'], style: const TextStyle(fontSize: 16)),
+            Text(course.desc, style: const TextStyle(fontSize: 16)),
             const Spacer(),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  context.read<CourseState>().toggleFavorite(course['code']);
+                  context.read<CourseState>().toggleFavorite(course.code);
                 },
                 icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
                 label: Text(isFavorite ? 'Hapus dari Favorit' : 'Jadikan Favorit'),
