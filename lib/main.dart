@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'models/course_state.dart';
-import 'screens/profile_page.dart';
+import 'widgets/responsive_shell.dart';
 
 void main() {
   runApp(
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter UI Fundamentals',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const ProfilePage(), // Sesuaikan dengan halaman utama kamu
+      home: const ResponsiveShell(),
     );
   }
 }
