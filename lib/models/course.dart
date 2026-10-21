@@ -2,38 +2,39 @@
 // NIM: 2415051107
 
 class Course {
+  final int? id;
   final String code;
   final String title;
   final int credits;
   final String status;
-  final String desc;
+  final String description;
 
-  Course({
+  const Course({
+    this.id,
     required this.code,
     required this.title,
     required this.credits,
-    required this.status,
-    required this.desc,
+    this.status = 'planned',
+    this.description = '',
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
-    // Mengambil nilai sks atau credits
-    final rawCredits = json['sks'] ?? json['credits'];
-    int parsedCredits = 0;
-
-    if (rawCredits is int) {
-      parsedCredits = rawCredits;
-    } else if (rawCredits is String) {
-      // Mengambil angka dari teks "3 SKS" -> 3
-      parsedCredits = int.tryParse(rawCredits.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-    }
-
     return Course(
-      code: json['code'] as String? ?? '',
-      title: json['title'] as String? ?? '',
-      credits: parsedCredits,
-      status: json['status'] as String? ?? 'Wajib',
-      desc: json['desc'] as String? ?? '',
+      id: json['id'] as int?,
+      code: (json['code'] as String?) ?? 'MOB0${json['id'] ?? 1}',
+      title: (json['title'] as String?) ?? '',
+      credits: (json['credits'] as int?) ?? 3,
+      status: (json['status'] as String?) ?? 'planned',
+      description: (json['description'] as String?) ?? (json['body'] as String?) ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        'code': code,
+        'title': title,
+        'credits': credits,
+        'status': status,
+        'description': description,
+      };
 }

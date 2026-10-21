@@ -35,7 +35,7 @@ class CourseDetailPage extends StatelessWidget {
             const SizedBox(height: 8),
             Text('Status: ${course.status}'),
             const SizedBox(height: 16),
-            Text(course.desc, style: const TextStyle(fontSize: 16)),
+            Text(course.title, style: const TextStyle(fontSize: 16)),
             const Spacer(),
             SizedBox(
               width: double.infinity,
