@@ -33,3 +33,9 @@ Aplikasi ini menerapkan *Separation of Concerns* dengan alur ketergantungan (*de
 * **`providers/`**: Mengelola *reactive state* (`isLoading`, `error`, `courses`, `favorites`) dan memanggil `notifyListeners()`.
 * **`screens/`**: Menampilkan antarmuka pengguna (*UI Pages*) tanpa menyimpan *business logic* atau pemanggilan data mentah.
 * **`widgets/`**: Menyimpan komponen UI yang reusable (seperti `ResponsiveShell`).
+
+## REST API Endpoint Documentation
+- **Endpoint:** https://jsonplaceholder.typicode.com/posts
+- **HTTP Method:** GET
+- **Status Code:** 200 OK
+- **JSON Fields:** `id`, `code`, `title`, `credits`, `status`
