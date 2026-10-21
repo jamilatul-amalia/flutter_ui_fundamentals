@@ -2,18 +2,23 @@
 // NIM: 2415051107
 
 import 'dart:convert';
-import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import '../models/course.dart';
 
-class CourseService {
-  Future<List<Course>> loadCourses() async {
-    final jsonString = await rootBundle.loadString(
-      'assets/data/student_data.json',
-    );
-    final data = jsonDecode(jsonString) as Map<String, dynamic>;
-    final list = data['courses'] as List<dynamic>;
+class CourseApiService {
+  CourseApiService(this.baseUrl);
 
-    return list
+  final String baseUrl;
+
+  Future<List<Course>> getCourses() async {
+    final response = await http.get(Uri.parse('$baseUrl/posts'));
+
+    if (response.statusCode != 200) {
+      throw Exception('Gagal mengambil course');
+    }
+
+    final List data = jsonDecode(response.body) as List;
+    return data
         .map((e) => Course.fromJson(e as Map<String, dynamic>))
         .toList();
   }
