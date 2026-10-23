@@ -15,6 +15,7 @@ class CourseState extends ChangeNotifier {
 
   List<Course> courses = [];
   bool isLoading = false;
+  bool isSaving = false; // Flag untuk indikator loading submit form
   String? error;
 
   final Set<String> favorites = {};
@@ -45,6 +46,22 @@ class CourseState extends ChangeNotifier {
       error = e.toString();
     } finally {
       isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> addCourse(Course course) async {
+    isSaving = true;
+    notifyListeners();
+
+    try {
+      await repository.createCourse(course);
+      await loadCourses(); // Refresh list setelah berhasil
+      return true;
+    } catch (e) {
+      return false;
+    } finally {
+      isSaving = false;
       notifyListeners();
     }
   }

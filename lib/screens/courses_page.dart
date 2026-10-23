@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/course_state.dart';
 import '../widgets/error_view.dart';
+import 'add_course_page.dart';
 
 class CoursesPage extends StatelessWidget {
   const CoursesPage({super.key});
@@ -13,41 +14,48 @@ class CoursesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<CourseState>();
 
-    // 1. Loading State
-    if (state.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    Widget bodyContent;
 
-    // 2. Error State
-    if (state.error != null) {
-      return ErrorView(
+    if (state.isLoading) {
+      bodyContent = const Center(child: CircularProgressIndicator());
+    } else if (state.error != null) {
+      bodyContent = ErrorView(
         message: state.error!,
         onRetry: state.loadCourses,
       );
+    } else if (state.courses.isEmpty) {
+      bodyContent = const Center(child: Text('Data course belum tersedia'));
+    } else {
+      bodyContent = ListView.builder(
+        itemCount: state.courses.length,
+        itemBuilder: (context, index) {
+          final course = state.courses[index];
+          return ListTile(
+            title: Text(course.title),
+            subtitle: Text('${course.code} • ${course.credits} SKS'),
+            trailing: Icon(
+              state.isFavorite(course.code)
+                  ? Icons.favorite
+                  : Icons.favorite_border,
+              color: state.isFavorite(course.code) ? Colors.red : null,
+            ),
+            onTap: () => state.toggleFavorite(course.code),
+          );
+        },
+      );
     }
 
-    // 3. Empty State
-    if (state.courses.isEmpty) {
-      return const Center(child: Text('Data course belum tersedia'));
-    }
-
-    // 4. Success State
-    return ListView.builder(
-      itemCount: state.courses.length,
-      itemBuilder: (context, index) {
-        final course = state.courses[index];
-        return ListTile(
-          title: Text(course.title),
-          subtitle: Text('${course.code} • ${course.credits} SKS'),
-          trailing: Icon(
-            state.isFavorite(course.code)
-                ? Icons.favorite
-                : Icons.favorite_border,
-            color: state.isFavorite(course.code) ? Colors.red : null,
-          ),
-          onTap: () => state.toggleFavorite(course.code),
-        );
-      },
+    return Scaffold(
+      body: bodyContent,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AddCoursePage()),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
