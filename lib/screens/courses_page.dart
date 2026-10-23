@@ -4,65 +4,50 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/course_state.dart';
-import 'course_detail_page.dart';
+import '../widgets/error_view.dart';
 
 class CoursesPage extends StatelessWidget {
   const CoursesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Daftar Mata Kuliah'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-      ),
-      body: Consumer<CourseState>(
-        builder: (context, state, child) {
-          if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    final state = context.watch<CourseState>();
 
-          if (state.error != null) {
-            return Center(child: Text('Error: ${state.error}'));
-          }
+    // 1. Loading State
+    if (state.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-          if (state.courses.isEmpty) {
-            return const Center(child: Text('Tidak ada mata kuliah.'));
-          }
+    // 2. Error State
+    if (state.error != null) {
+      return ErrorView(
+        message: state.error!,
+        onRetry: state.loadCourses,
+      );
+    }
 
-          return ListView.builder(
-            itemCount: state.courses.length,
-            itemBuilder: (context, index) {
-              final course = state.courses[index];
-              final isFav = state.isFavorite(course.code);
+    // 3. Empty State
+    if (state.courses.isEmpty) {
+      return const Center(child: Text('Data course belum tersedia'));
+    }
 
-              return ListTile(
-                title: Text(course.title),
-                subtitle: Text('${course.code} • ${course.credits} SKS'),
-                trailing: IconButton(
-                  icon: Icon(
-                    isFav ? Icons.favorite : Icons.favorite_border,
-                    color: isFav ? Colors.red : null,
-                  ),
-                  onPressed: () => state.toggleFavorite(course.code),
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CourseDetailPage(
-                        course: course,
-                        isFavorite: isFav,
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-          );
-        },
-      ),
+    // 4. Success State
+    return ListView.builder(
+      itemCount: state.courses.length,
+      itemBuilder: (context, index) {
+        final course = state.courses[index];
+        return ListTile(
+          title: Text(course.title),
+          subtitle: Text('${course.code} • ${course.credits} SKS'),
+          trailing: Icon(
+            state.isFavorite(course.code)
+                ? Icons.favorite
+                : Icons.favorite_border,
+            color: state.isFavorite(course.code) ? Colors.red : null,
+          ),
+          onTap: () => state.toggleFavorite(course.code),
+        );
+      },
     );
   }
 }
