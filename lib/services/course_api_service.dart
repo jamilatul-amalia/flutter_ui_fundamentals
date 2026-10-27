@@ -41,7 +41,7 @@ class CourseApiService {
 
   Future<Course> updateCourse(String code, Course course) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/posts/1'), // Menggunakan endpoint simulasi
+      Uri.parse('$baseUrl/posts/1'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(course.toJson()),
     );
@@ -53,5 +53,15 @@ class CourseApiService {
     return Course.fromJson(
       jsonDecode(response.body) as Map<String, dynamic>,
     );
+  }
+
+  Future<void> deleteCourse(String code) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/posts/1'),
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('Gagal menghapus course');
+    }
   }
 }

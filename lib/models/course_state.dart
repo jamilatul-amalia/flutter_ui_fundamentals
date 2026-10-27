@@ -81,4 +81,22 @@ class CourseState extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> removeCourse(String code) async {
+    isSaving = true;
+    notifyListeners();
+
+    try {
+      await repository.deleteCourse(code);
+      // Hapus dari favorit jika ada agar tidak menjadi data yatim
+      favorites.remove(code);
+      await loadCourses();
+      return true;
+    } catch (e) {
+      return false;
+    } finally {
+      isSaving = false;
+      notifyListeners();
+    }
+  }
 }

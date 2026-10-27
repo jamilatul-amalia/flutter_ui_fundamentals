@@ -20,4 +20,8 @@ class CourseRepository {
   Future<Course> updateCourse(String code, Course course) {
     return apiService.updateCourse(code, course);
   }
+
+  Future<void> deleteCourse(String code) {
+    return apiService.deleteCourse(code);
+  }
 }
