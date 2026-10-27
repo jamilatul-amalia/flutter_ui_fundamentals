@@ -25,7 +25,7 @@ class CourseApiService {
 
   Future<Course> createCourse(Course course) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/posts'), // jsonplaceholder memakai /posts
+      Uri.parse('$baseUrl/posts'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(course.toJson()),
     );
@@ -37,5 +37,21 @@ class CourseApiService {
     }
 
     throw Exception('Gagal membuat course');
+  }
+
+  Future<Course> updateCourse(String code, Course course) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/posts/1'), // Menggunakan endpoint simulasi
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(course.toJson()),
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('Gagal memperbarui course');
+    }
+
+    return Course.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 }

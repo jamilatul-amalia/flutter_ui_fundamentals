@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../models/course_state.dart';
 import '../widgets/error_view.dart';
 import 'add_course_page.dart';
+import 'edit_course_page.dart';
 
 class CoursesPage extends StatelessWidget {
   const CoursesPage({super.key});
@@ -33,13 +34,31 @@ class CoursesPage extends StatelessWidget {
           return ListTile(
             title: Text(course.title),
             subtitle: Text('${course.code} • ${course.credits} SKS'),
-            trailing: Icon(
-              state.isFavorite(course.code)
-                  ? Icons.favorite
-                  : Icons.favorite_border,
-              color: state.isFavorite(course.code) ? Colors.red : null,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.blue),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EditCoursePage(course: course),
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: Icon(
+                    state.isFavorite(course.code)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color: state.isFavorite(course.code) ? Colors.red : null,
+                  ),
+                  onPressed: () => state.toggleFavorite(course.code),
+                ),
+              ],
             ),
-            onTap: () => state.toggleFavorite(course.code),
           );
         },
       );
