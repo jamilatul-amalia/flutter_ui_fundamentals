@@ -2,26 +2,21 @@
 // NIM: 2415051107
 
 import '../models/course.dart';
-import '../services/course_api_service.dart';
+import '../services/course_data_source.dart';
 
 class CourseRepository {
-  final CourseApiService apiService;
+  CourseRepository(this.dataSource);
 
-  CourseRepository(this.apiService);
+  final CourseDataSource dataSource;
 
-  Future<List<Course>> getCourses() {
-    return apiService.getCourses();
-  }
+  Future<List<Course>> getCourses() => dataSource.getCourses();
 
-  Future<Course> createCourse(Course course) {
-    return apiService.createCourse(course);
-  }
+  Future<Course> createCourse(Course course) =>
+      dataSource.createCourse(course);
 
-  Future<Course> updateCourse(String code, Course course) {
-    return apiService.updateCourse(code, course);
-  }
+  Future<Course> updateCourse(String code, Course course) =>
+      dataSource.updateCourse(code, course);
 
-  Future<void> deleteCourse(String code) {
-    return apiService.deleteCourse(code);
-  }
+  Future<void> deleteCourse(String code) =>
+      dataSource.deleteCourse(code);
 }

@@ -4,12 +4,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'models/course_state.dart';
+import 'repositories/course_repository.dart';
+import 'services/course_api_service.dart';
 import 'widgets/responsive_shell.dart';
 
 void main() {
+  final apiBaseUrl = 'https://jsonplaceholder.typicode.com';
+  final repository = CourseRepository(CourseApiService(apiBaseUrl));
+
   runApp(
     ChangeNotifierProvider(
-      create: (_) => CourseState()..loadCourses(),
+      create: (_) => CourseState(repository: repository)..loadCourses(),
       child: const MyApp(),
     ),
   );
