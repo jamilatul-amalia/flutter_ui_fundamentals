@@ -26,7 +26,7 @@ class CourseSupabaseService implements CourseDataSource {
       'code': course.code.toUpperCase(),
       'title': course.title,
       'credits': course.credits,
-      'status': course.status.toLowerCase(),
+      'status': course.status.toLowerCase(), // Normalisasi status ke huruf kecil
     };
 
     final row = await supabase
@@ -40,25 +40,49 @@ class CourseSupabaseService implements CourseDataSource {
 
   @override
   Future<Course> updateCourse(String id, Course course) async {
-    final Map<String, dynamic> payload = {
-      'code': course.code.toUpperCase(),
-      'title': course.title,
-      'credits': course.credits,
-      'status': course.status.toLowerCase(),
-    };
+    try {
+      final Map<String, dynamic> payload = {
+        'code': course.code.toUpperCase(),
+        'title': course.title,
+        'credits': course.credits,
+        'status': course.status.toLowerCase(),
+      };
 
-    final row = await supabase
-        .from('courses')
-        .update(payload)
-        .eq('id', id)
-        .select()
-        .single();
+      // Konversi ID ke angka jika memungkinkan
+      final int? parsedId = int.tryParse(id) ?? int.tryParse(course.id.toString());
 
-    return Course.fromJson(row);
+      var query = supabase.from('courses').update(payload);
+
+      // Jika ID angka valid, update berdasarkan 'id'. Jika berupa string kode, update berdasarkan 'code'
+      final response = await (parsedId != null && parsedId > 0
+              ? query.eq('id', parsedId)
+              : query.eq('code', course.code.toUpperCase()))
+          .select()
+          .maybeSingle();
+
+      if (response == null) {
+        throw Exception("Data course tidak ditemukan di Supabase.");
+      }
+
+      return Course.fromJson(response);
+    } catch (e) {
+      print("ERROR SUPABASE UPDATE: $e");
+      rethrow;
+    }
   }
 
   @override
   Future<void> deleteCourse(String id) async {
-    await supabase.from('courses').delete().eq('id', id);
+    try {
+      final int? parsedId = int.tryParse(id);
+      if (parsedId != null && parsedId > 0) {
+        await supabase.from('courses').delete().eq('id', parsedId);
+      } else {
+        await supabase.from('courses').delete().eq('code', id.toUpperCase());
+      }
+    } catch (e) {
+      print("ERROR SUPABASE DELETE: $e");
+      rethrow;
+    }
   }
 }
