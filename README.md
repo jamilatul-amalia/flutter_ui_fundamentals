@@ -1,41 +1,20 @@
-# flutter_ui_fundamentals
+# Course Data Manager - Flutter UI Fundamentals
 
-A new Flutter project.
+**Nama**: Jamilatul Amalia  
+**NIM**: 2415051107  
+**Mata Kuliah**: Pemrograman Berbasis Mobile (Worksheet Pertemuan 07)  
 
-## Getting Started
+## Deskripsi Aplikasi
+Course Data Manager adalah aplikasi pengelolaan data mata kuliah berbasis **Flutter** yang terintegrasi secara penuh dengan database cloud **Supabase**. Aplikasi ini mendukung operasi CRUD lengkap (Create, Read, Update, Delete dengan dialog konfirmasi), penanganan loading/empty/error state, serta antarmuka responsif di berbagai perangkat.
 
-This project is a starting point for a Flutter application.
+## Arsitektur Aplikasi (Separation of Concerns)
+- `models/`: Pengelolaan model data (`course.dart`).
+- `services/`: Lapisan data source backend (`course_supabase_service.dart`, `course_api_service.dart`).
+- `repositories/`: Lapisan abstraksi data (`course_repository.dart`).
+- `providers/`: Manajemen state aplikasi (`course_provider.dart` / `course_state.dart`).
+- `screens/` & `widgets/`: Komponen tampilan UI responsif dan reusabel.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
-# Course Explorer v2 - Flutter UI Fundamentals
-
-**Nama:** Jamilatul Amalia  
-**NIM:** 2415051107  
-
-## Arsitektur Aplikasi & Dependency Direction
-
-Aplikasi ini menerapkan *Separation of Concerns* dengan alur ketergantungan (*dependency direction*) searah:
-`Screen/Widget` -> `Provider (CourseState)` -> `CourseRepository` -> `CourseService` -> `Data Source (JSON)`
-
-### Tanggung Jawab Folder:
-* **`models/`**: Menyimpan struktur data murni (misal: `Course`) dan *application state holder* (`CourseState`).
-* **`services/`**: Menangani pembacaan data mentah dari sumber luar (`rootBundle` / `student_data.json`) dan proses `jsonDecode`.
-* **`repositories/`**: Menjadi perantara antara service dan provider untuk mengolah atau memetakan data mentah menjadi objek model.
-* **`providers/`**: Mengelola *reactive state* (`isLoading`, `error`, `courses`, `favorites`) dan memanggil `notifyListeners()`.
-* **`screens/`**: Menampilkan antarmuka pengguna (*UI Pages*) tanpa menyimpan *business logic* atau pemanggilan data mentah.
-* **`widgets/`**: Menyimpan komponen UI yang reusable (seperti `ResponsiveShell`).
-
-## REST API Endpoint Documentation
-- **Endpoint:** https://jsonplaceholder.typicode.com/posts
-- **HTTP Method:** GET
-- **Status Code:** 200 OK
-- **JSON Fields:** `id`, `code`, `title`, `credits`, `status`
+## Cara Menjalankan Aplikasi
+1. Clone repositori ini:
+   ```bash
+   git clone [https://github.com/jamilatul-amalia/flutter_ui_fundamentals.git](https://github.com/jamilatul-amalia/flutter_ui_fundamentals.git)
